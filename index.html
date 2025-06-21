@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyBuddy - Smart Study Planner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+    header {
+      background: #4e54c8;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    input[type="text"], input[type="number"] {
+      flex: 1;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      padding: 0.6rem 1rem;
+      background: #4e54c8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3e42b0;
+    }
+    .subject-list {
+      margin-top: 2rem;
+    }
+    .subject {
+      display: flex;
+      justify-content: space-between;
+      background: #f9f9f9;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 5px solid #4e54c8;
+      border-radius: 6px;
+    }
+    .progress-bar {
+      height: 10px;
+      background: #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .progress {
+      height: 100%;
+      background: #4e54c8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📘 StudyBuddy - Smart Study Planner</h1>
+  </header>  <div class="container">
+    <div class="form-group">
+      <input type="text" id="subject" placeholder="Enter subject (e.g. Math)" />
+      <input type="number" id="hours" placeholder="Hours per week" />
+      <button onclick="addSubject()">Add</button>
+    </div><div class="subject-list" id="subjectList"></div>
+
+  </div>  <script>
+    const subjectList = document.getElementById("subjectList");
+    let subjects = [];
+
+    function addSubject() {
+      const subjectName = document.getElementById("subject").value.trim();
+      const hours = parseInt(document.getElementById("hours").value);
+
+      if (subjectName === "" || isNaN(hours) || hours <= 0) return alert("Please enter valid subject and hours.");
+
+      const subject = {
+        id: Date.now(),
+        name: subjectName,
+        hours,
+        completed: 0
+      };
+
+      subjects.push(subject);
+      renderSubjects();
+      document.getElementById("subject").value = "";
+      document.getElementById("hours").value = "";
+    }
+
+    function updateProgress(id, direction) {
+      subjects = subjects.map(s => {
+        if (s.id === id) {
+          if (direction === "up" && s.completed < s.hours) s.completed++;
+          if (direction === "down" && s.completed > 0) s.completed--;
+        }
+        return s;
+      });
+      renderSubjects();
+    }
+
+    function renderSubjects() {
+      subjectList.innerHTML = "";
+      subjects.forEach(subject => {
+        const percent = (subject.completed / subject.hours) * 100;
+        subjectList.innerHTML += `
+          <div class="subject">
+            <div>
+              <strong>${subject.name}</strong><br/>
+              <small>${subject.completed}/${subject.hours} hrs completed</small>
+              <div class="progress-bar">
+                <div class="progress" style="width: ${percent}%"></div>
+              </div>
+            </div>
+            <div>
+              <button onclick="updateProgress(${subject.id}, 'up')">+1</button>
+              <button onclick="updateProgress(${subject.id}, 'down')">-1</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script></body>
+</html>
